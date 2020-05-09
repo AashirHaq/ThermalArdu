@@ -182,22 +182,35 @@ public class Controlling extends Activity {
         {
             byte[] buffer = new byte[1024];
             boolean loop = true;
+            boolean correctVal = true;
+            float tempLength = 0;
             while (loop)
             {
                 try {
-//                    bytes = inputStream.read(buffer);
-//                    Log.d("SendReceive", String.valueOf(buffer));
-//                    if(bytes >= 5){
-//                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer).sendToTarget();
-//                        loop = false;
-//                    }else
-//                        continue;
+
                     int length = inputStream.read(buffer);
                     String text = new String(buffer, 0, length);
-                    Log.d("SendReceive", text);
-                    if(length >= 5){
+                    float converted = Float.parseFloat(text);
 
-                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, length, -1, buffer).sendToTarget();
+                    Log.d("SendReceive", text);
+
+                    if(text.length() == 1){
+                        correctVal = false;
+                        tempLength = converted*10;
+                    }
+                    else{
+                        correctVal = true;
+                        converted = tempLength+converted;
+                        tempLength = 0;
+                    }
+
+                    if(correctVal){
+
+                        String textNew = Float.toString(converted);
+                        byte[] b = textNew.getBytes();
+                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, textNew.length(), -10, b).sendToTarget();
+
+//                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, length, -10, buffer).sendToTarget();
                         loop = false;
                     }else
                         continue;
